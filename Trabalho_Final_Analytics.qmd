@@ -339,33 +339,39 @@ resultados_tidy_df
 
 ## 2.2. Análise dos resíduos
 ```{r analise dos residuos}
-residuos <- list()
-par(mfrow = c(6, 1))
 
-# Iterando sobre cada linha do data frame `resultados_tidy_df2`
-for (i in 1:nrow(resultados_tidy_df)) {
+#| fig-width: 6
+#| fig-height: 15
+#| 
+
+# residuos <- list()
+# par(mfrow = c(6, 1))
+
+# # Iterando sobre cada linha do data frame `resultados_tidy_df2`
+# for (i in 1:nrow(resultados_tidy_df)) {
   
-  # Concatenando o nome do modelo 
-  model_name <- paste0(resultados_tidy_df$Modelo[i], "_", 
-                       resultados_tidy_df$m[i], "_", 
-                       resultados_tidy_df$n[i], "_", 
-                       resultados_tidy_df$dist[i], "_", 
-                       resultados_tidy_df$ticker[i])
+#   # Concatenando o nome do modelo 
+#   model_name <- paste0(resultados_tidy_df$Modelo[i], "_", 
+#                        resultados_tidy_df$m[i], "_", 
+#                        resultados_tidy_df$n[i], "_", 
+#                        resultados_tidy_df$dist[i], "_", 
+#                        resultados_tidy_df$ticker[i])
   
-  # Checando se o modelo está entre os melhores
-  if (model_name %in% names(modelos_garch)) {
-    # Acessando os melhores modelos e calculando os resíduos
-    current_model <- modelos_garch[[model_name]]
-    residuos[[model_name]] <- residuals(current_model, standardize=TRUE)
+#   # Checando se o modelo está entre os melhores
+#   if (model_name %in% names(modelos_garch)) {
+#     # Acessando os melhores modelos e calculando os resíduos
+#     current_model <- modelos_garch[[model_name]]
+#     residuos[[model_name]] <- residuals(current_model, standardize=TRUE)
     
-    # Plotando os resíduos
-    ts.plot(residuos[[model_name]], main = model_name)
-  }
-}
+#     # Plotando os resíduos
+#     ts.plot(residuos[[model_name]], main = model_name)
+#   }
+# }
 
 ```
 
 **Interpretação**
+
 * Padrões: Não foi encontrado padrões claros, o que é um bom sinal. Isso sugere que os modelos estão capturando bem a estrutura dos dados.
 * Outliers: Todos os gráficos têm alguns outliers, o que faz sentido em séries financeiras. 
 * Heterocedasticidade: três ações mostram variações na amplitude dos resíduos, sugerindo que pode haver alguma heterocedasticidade residual (RENT3.SA & NVDC334.SA & BCSA34.SA). 
@@ -631,7 +637,7 @@ min_var |>
   )
 ```
 
-Gráfico de máximo Value at Risk
+Gráfico de máximo Sharpe Ratio
 ```{r grafico max sr}
 max_sr |>
   pivot_longer(2:7) |>
@@ -642,7 +648,7 @@ max_sr |>
   labs(
     x = "Ativos",
     y = "Pesos",
-    title = "Tangency portfolio weights"
+    title = "Portfólio de melhor retorno pelo risco"
   )
 ```
 
@@ -680,12 +686,12 @@ pesos_finais <- min_var |>
   dplyr::select(2:7) |>
   as.numeric()
 
-rt_final <- mean(forecast_ativos$serie * pesos_finais)
-st_dev_final <- sqrt(pesos_finais %*% cov_mat %*% pesos_finais)
-nu <- min(vol_futuro$shape)
-valor_t <- qt(.95, nu)
+# rt_final <- mean(forecast_ativos$serie * pesos_finais)
+# st_dev_final <- sqrt(pesos_finais %*% cov_mat %*% pesos_finais)
+# nu <- min(vol_futuro$shape)
+# valor_t <- qt(.95, nu)
 
-(VaR <- rt_final + valor_t * st_dev_final / sqrt(nu/(nu-2)))
+# (VaR <- rt_final + valor_t * st_dev_final / sqrt(nu/(nu-2)))
 ```
 
 # CAPM
@@ -735,10 +741,3 @@ capm_lm_tudo
 
 capm_lm_individual
 ```
-
-
-1. Calcular retorno da carteira otimizada
-2. Comparar retornos <- ?
-3. Arrumar CAPM
-4. Interpretar CAPM
-5. Matriz de covariância <- ?
